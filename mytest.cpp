@@ -240,11 +240,11 @@ int main(){
     // This program presents a sample use of the class HashTable
     // It does not represent any rehashing
     Random diskBlockGen(DISKMIN,DISKMAX);
-    int tempDiskBlocks[99991] = {0};
+    int tempDiskBlocks[9999] = {0};
     HashTable aTable(MINPRIME,hashCode);
     int temp = 0;
     int secondIndex = 0;
-    for (int i=0;i<99991;i++){
+    for (int i=0;i<9999;i++){
         temp = diskBlockGen.getRandNum();
         if (i%3 == 0){//this saves 17 numbers from the index range [0-49]
             tempDiskBlocks[secondIndex] = temp;
