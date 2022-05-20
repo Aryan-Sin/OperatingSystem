@@ -1,11 +1,11 @@
 CXX = g++
 CXXFLAGS = -Wall -g
 
-proj0: mytest.cpp mqueue.cpp mqueue.h
-	$(CXX) $(CXXFLAGS) mytest.cpp mqueue.cpp mqueue.h -o proj03
+proj04: mytest.cpp hash.cpp hash.h file.cpp file.h
+	$(CXX) $(CXXFLAGS) mytest.cpp hash.cpp hash.h file.cpp file.h -o proj04
 
 run:
-	./proj03
+	./proj04
 
 val:
-	valgrind proj03 -s --track-origins=yes
+	valgrind -s --track-origins=yes proj04
