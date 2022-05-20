@@ -22,7 +22,7 @@ public:
             m_unidist = std::uniform_int_distribution<>(min,max);
         }
     }
-    
+
     int getRandNum(){
         int result = 0;
         if(m_type == NORMAL){
@@ -38,7 +38,7 @@ public:
         }
         return result;
     }
-    
+
 private:
     int m_min;
     int m_max;
@@ -47,7 +47,7 @@ private:
     std::mt19937 m_generator;
     std::normal_distribution<> m_normdist;//normal distribution
     std::uniform_int_distribution<> m_unidist;//uniform distribution
-    
+
 };
 
 // The hash function used by HashTable class
@@ -74,7 +74,7 @@ public:
             cout << "\nTesting hash function: " << endl;
             for (unsigned int i = 0; i < 10; i++){
                 unsigned int index =(testTable.m_hash(fileNames[i]) % testTable.m_capacity1);
-                
+
                 if(testTable.m_table1[index].key() != fileNames[i] &&
                    testTable.m_table1[index].diskBlock() != 100000 + i){
                     throw runtime_error("File was not placed at the correct index");
@@ -124,18 +124,18 @@ public:
             cout << e.what() << endl;
         }
     }
-    
+
     void testWithCollisions(){
         try{
             cout << "\nTesting hash table with keys that collide: " << endl;
             Random diskBlockGen(DISKMIN,DISKMAX);
             HashTable hashTable(MINPRIME,hashCode);
             int temp = 0;
-            int deadDiskBlocks[99992] = {0};
+            int deadDiskBlocks[500] = {0};
             int deadIndex = 0;
-            int liveDiskBlocks[99992] = {0};
+            int liveDiskBlocks[500] = {0};
             int liveIndex = 0;
-            unsigned int numFiles = 5000 ;
+            unsigned int numFiles = 215 ;
             cout << "\nInserting " << numFiles << " files." << endl;
             for (unsigned int i = 0; i < numFiles; i++){
                 temp = diskBlockGen.getRandNum();
@@ -155,50 +155,50 @@ public:
                     }
                 }
             }
-//            if(hashTable.m_capacity1 != 431)
-//                throw runtime_error("Table does not have the correct capacity");
-//
+            if(hashTable.m_capacity1 != 431)
+                throw runtime_error("Table does not have the correct capacity");
+
             cout << "\nTesting size of the hash tables: " << endl;
             if((hashTable.m_size1 - hashTable.m_numDeleted1) +
                (hashTable.m_size2 - hashTable.m_numDeleted2) != numFiles){
                 throw runtime_error("Not all files were inserted into the system");
             }
             cout << "--->Table size test passed!" << endl;
-            
+
             cout << "\nTesting file removal without resizing: " << endl;
-//            for (int i = 0; i < 171; i++){
-//                File file("dead.jpg", deadDiskBlocks[i]);
-//                if(!hashTable.remove(file)){
-//                    throw runtime_error("File could not be removed");
-//                }
-//            }
-//            if(hashTable.m_newTable != TABLE1 || hashTable.m_capacity1 != 431){
-//                throw runtime_error("Table started rehashing prematurely");
-//            }
-//            cout << "--->Removal without resizing passed!" << endl;
-//
-//            cout << "\nTesting file removal with resizing: " << endl;
-//            File file("dead.jpg", deadDiskBlocks[171]);
-//            hashTable.remove(file);
-//            if(hashTable.m_newTable != TABLE2)
-//                throw runtime_error("System did not start rehashing");
-//            if(hashTable.m_capacity2 != 173)
-//                throw runtime_error("New table does not have correct capacity");
-            for (int i = 0; i < deadIndex; i++){
+            for (int i = 0; i < 171; i++){
                 File file("dead.jpg", deadDiskBlocks[i]);
                 if(!hashTable.remove(file)){
                     throw runtime_error("File could not be removed");
                 }
             }
-            for (int i = 0; i < deadIndex; i++){
+            for (int i = 0; i < 171; i++){
                 File file = hashTable.getFile("dead.jpg", deadDiskBlocks[i]);
                 if(file.diskBlock()){
                     throw runtime_error("Removed file still in the system");
                 }
             }
-//            if(hashTable.m_table2)
-//                throw runtime_error("Table used to transfer was not deallocated");
-//            cout << "--->Removal with resizing passed!" << endl;
+            if(hashTable.m_newTable != TABLE1 || hashTable.m_capacity1 != 431){
+                throw runtime_error("Table started rehashing prematurely");
+            }
+            cout << "--->Removal without resizing passed!" << endl;
+
+            cout << "\nTesting file removal with resizing: " << endl;
+            File file("dead.jpg", deadDiskBlocks[171]);
+            hashTable.remove(file);
+            if(hashTable.m_newTable != TABLE2)
+                throw runtime_error("System did not start rehashing");
+            if(hashTable.m_capacity2 != 173)
+                throw runtime_error("New table does not have correct capacity");
+            for (int i = 172; i < deadIndex; i++){
+                File file("dead.jpg", deadDiskBlocks[i]);
+                if(!hashTable.remove(file)){
+                    throw runtime_error("File could not be removed");
+                }
+            }
+            if(hashTable.m_table2)
+                throw runtime_error("Table used to transfer was not deallocated");
+            cout << "--->Removal with resizing passed!" << endl;
 
             cout << "\nTesting file retrieval: " << endl;
             for (int i = 0; i < liveIndex; i++) {
@@ -233,40 +233,40 @@ public:
         }
     }
 private:
-    
+
 };
 
 int main(){
     // This program presents a sample use of the class HashTable
     // It does not represent any rehashing
     Random diskBlockGen(DISKMIN,DISKMAX);
-    int tempDiskBlocks[50] = {0};
+    int tempDiskBlocks[99991] = {0};
     HashTable aTable(MINPRIME,hashCode);
     int temp = 0;
     int secondIndex = 0;
-    for (int i=0;i<50;i++){
+    for (int i=0;i<99991;i++){
         temp = diskBlockGen.getRandNum();
         if (i%3 == 0){//this saves 17 numbers from the index range [0-49]
             tempDiskBlocks[secondIndex] = temp;
-            cout << temp << " was saved for later use." << endl;
+            //cout << temp << " was saved for later use." << endl;
             secondIndex++;
         }
-        cout << "Insertion # " << i << " => " << temp << endl;
+        //cout << "Insertion # " << i << " => " << temp << endl;
         if (i%3 != 0)
             aTable.insert(File("test.txt", temp));
         else
             // these will be deleted
             aTable.insert(File("driver.cpp", temp));
     }
-    
+
     cout << "Message: dump after 50 insertions in a table with MINPRIME (101) buckets:" << endl;
     aTable.dump();
-    
+
     for (int i = 0;i<14;i++)
         aTable.remove(File("driver.cpp", tempDiskBlocks[i]));
     cout << "Message: dump after removing 14 buckets," << endl;
     aTable.dump();
-    
+
     Tester tester;
     tester.testWithoutCollisions();
     tester.testWithCollisions();
@@ -277,7 +277,7 @@ int main(){
 unsigned int hashCode(const string str) {
     unsigned int val = 0 ;
     const unsigned int thirtyThree = 33 ;  // magic number from textbook
-    for ( int i = 0 ; i < str.length(); i++)
+    for ( long int unsigned i = 0 ; i < str.length(); i++)
         val = val * thirtyThree + str[i] ;
     return val ;
 }
